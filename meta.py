@@ -47,4 +47,37 @@ ax.bar_label(ax.containers[0])
 
 # One hot encoding content_rating feature
 content_rating = pd.get_dummies(df_movie.content_rating)
+content_rating.replace({False: 0, True: 1}, inplace=True)
 print(content_rating.head())
+
+# Data preprocessing II: audience_status feature
+print(f'Audience status category: {df_movie.audience_status.unique()}')
+
+# Visualize the distribution of each category
+ax = df_movie.audience_status.value_counts().plot(kind='bar', figsize=(12,9))
+ax.bar_label(ax.containers[0])
+
+# Encode audience status feature with ordinal encoding
+audience_status = pd.DataFrame(df_movie.audience_status.replace(['Spilled','Upright'],[0,1]))
+audience_status.head()
+
+# Data preprocessing III: tomatometer_status feature
+# Encode tomatometer status feature with ordinal encoding
+tomatometer_status = pd.DataFrame(df_movie.tomatometer_status.replace(['Rotten','Fresh','Certified-Fresh'],[0,1,2]))
+tomatometer_status
+
+# Combine all of the features together into one dataframe
+df_feature = pd.concat([df_movie[['runtime', 'tomatometer_rating', 'tomatometer_count', 'audience_rating', 'audience_count', 'tomatometer_top_critics_count', 'tomatometer_fresh_critics_count', 'tomatometer_rotten_critics_count']]
+                        , content_rating, audience_status, tomatometer_status], axis=1).dropna()
+df_feature.head()
+
+# Check the distribution of feature dataframe
+df_feature.describe()
+
+# Check class distribution of our target variable:tomatometer_status  
+ax = df_feature.tomatometer_status.value_counts().plot(kind='bar', figsize=(12,9))
+ax.bar_label(ax.containers[0])
+
+# Split the data into training and test data
+X_train, X_test, y_train, y_test = train_test_split(df_feature.drop(['tomatometer_status'], axis=1), df_feature.tomatometer_status, test_size= 0.2, random_state=42)
+print(f'Size of training data is {len(X_train)} and the size of test data is {len(X_test)}')
