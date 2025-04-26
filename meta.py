@@ -38,3 +38,13 @@ print(df_movie.head())
 # Check data distribution
 print(df_movie.describe())
 
+#Data Preprocessing
+print(f'Content Rating category: {df_movie.content_rating.unique()}')
+
+# Visualize the distribution of each category in content_rating feature
+ax = df_movie.content_rating.value_counts().plot(kind='bar', figsize=(12,9))
+ax.bar_label(ax.containers[0])
+
+# One hot encoding content_rating feature
+content_rating = pd.get_dummies(df_movie.content_rating)
+print(content_rating.head())
